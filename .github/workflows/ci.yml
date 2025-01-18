@@ -1,4 +1,4 @@
-name: CI Workflow
+name: Node CI Workflow
 
 on:
   push:
@@ -8,28 +8,35 @@ on:
     branches:
       - main
 
+env:
+  CI: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [18.x]
+
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.x'
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          make setup
-
-      - name: Run tests
-        run: |
-          make test
+        run: make setup
 
       - name: Run lint
-        run: |
-          make lint
+        run: make lint
 
+      - name: Run tests
+        run: make test
+
+      - name: Hello from Hexlet
+        uses: hexlet-components/hello-from-hexlet-action@release
